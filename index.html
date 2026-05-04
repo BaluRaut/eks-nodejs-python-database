@@ -232,17 +232,8 @@
 </main>
 
 <script>
-/* marked setup */
-marked.use({
-  renderer: {
-    code(code, lang) {
-      const l = lang && hljs.getLanguage(lang) ? lang : null;
-      const h = l ? hljs.highlight(code,{language:l}).value : hljs.highlightAuto(code).value;
-      return `<pre><code class="hljs${l?' language-'+l:''}">${h}</code></pre>`;
-    }
-  },
-  gfm: true, breaks: false
-});
+/* marked setup — no custom renderer; apply hljs after parse to avoid v9 API mismatch */
+marked.use({ gfm: true, breaks: false });
 
 /* Secrets */
 const MASKS = [
@@ -297,6 +288,10 @@ async function load(el){
     const raw=await r.text();
     const{txt,hit}=mask(raw);
     c.innerHTML=marked.parse(txt);
+    /* syntax highlighting — run AFTER innerHTML is set */
+    c.querySelectorAll('pre code').forEach(block=>{
+      hljs.highlightElement(block);
+    });
     c.querySelectorAll('pre').forEach(p=>{
       const b=document.createElement('button');
       b.className='cpbtn';b.textContent='Copy';
