@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-theme">
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root[data-theme="dark"] {
       --bg:#0d1117; --sb:#161b22; --hd:#161b22;
@@ -218,6 +219,10 @@
     <div class="ni" data-file="MONITORING_LOGGING.md"      onclick="load(this)"><span class="ni-icon">📊</span> Monitoring &amp; Logging</div>
     <div class="ni" data-file="SECURITY_BEST_PRACTICES.md" onclick="load(this)"><span class="ni-icon">🔒</span> Security Best Practices</div>
   </div>
+  <div class="ng">
+    <div class="nt">Diagrams</div>
+    <div class="ni" data-file="SEQUENCE_DIAGRAMS.md" onclick="load(this)"><span class="ni-icon">🔀</span> Sequence Diagrams</div>
+  </div>
 </aside>
 
 <main id="main">
@@ -234,6 +239,12 @@
 <script>
 /* marked setup — no custom renderer; apply hljs after parse to avoid v9 API mismatch */
 marked.use({ gfm: true, breaks: false });
+
+/* Mermaid */
+function initMermaid(){
+  mermaid.initialize({ startOnLoad: false, theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default', securityLevel: 'loose' });
+}
+initMermaid();
 
 /* Secrets */
 const MASKS = [
@@ -258,6 +269,7 @@ function toggleTheme(){
   document.getElementById('hljs-theme').href=theme==='dark'
     ?'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
     :'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+  initMermaid();
 }
 
 /* Nav filter */
@@ -288,6 +300,20 @@ async function load(el){
     const raw=await r.text();
     const{txt,hit}=mask(raw);
     c.innerHTML=marked.parse(txt);
+    /* render mermaid blocks */
+    const mermaidBlocks=[];
+    c.querySelectorAll('pre code.language-mermaid').forEach(code=>{
+      const pre=code.parentElement;
+      const div=document.createElement('div');
+      div.className='mermaid';
+      div.textContent=code.textContent;
+      pre.replaceWith(div);
+      mermaidBlocks.push(div);
+    });
+    if(mermaidBlocks.length){
+      initMermaid();
+      await mermaid.run({nodes:mermaidBlocks});
+    }
     /* syntax highlighting — run AFTER innerHTML is set */
     c.querySelectorAll('pre code').forEach(block=>{
       hljs.highlightElement(block);
@@ -326,6 +352,7 @@ const CARDS=[
   {f:'CIRCLECI_CICD_GUIDE.md',                     i:'⚙️',t:'CircleCI CI/CD',              d:'Tag-based deployments, orbs, approvals, rollback.'},
   {f:'MONITORING_LOGGING.md',                      i:'📊',t:'Monitoring & Logging',        d:'CloudWatch, Fluent Bit, Prometheus, Grafana, X-Ray.'},
   {f:'SECURITY_BEST_PRACTICES.md',                 i:'🔒',t:'Security Best Practices',     d:'Secrets, IRSA, RBAC, network policies, GuardDuty.'},
+  {f:'SEQUENCE_DIAGRAMS.md',                       i:'🔀',t:'Sequence Diagrams',            d:'8 Mermaid diagrams: CI/CD, ECR push, EKS deploy, DNS, scaling.'},
 ];
 function showHome(){
   document.querySelectorAll('.ni').forEach(i=>i.classList.remove('active'));
@@ -339,7 +366,7 @@ function showHome(){
       <p>Everything you need to deploy Node.js + Python microservices on AWS EKS — from zero to production.</p>
       <p class="wm">
         <a href="https://github.com/BaluRaut/eks-nodejs-python-database" target="_blank">View on GitHub</a>
-        &nbsp;·&nbsp; 11 guides &nbsp;·&nbsp; Node.js · Python · PostgreSQL · EKS
+        &nbsp;·&nbsp; 12 guides &nbsp;·&nbsp; Node.js · Python · PostgreSQL · EKS
       </p>
     </div>
     <div class="grid">${CARDS.map(c=>`
