@@ -220,8 +220,11 @@
     <div class="ni" data-file="SECURITY_BEST_PRACTICES.md" onclick="load(this)"><span class="ni-icon">🔒</span> Security Best Practices</div>
   </div>
   <div class="ng">
-    <div class="nt">Diagrams</div>
-    <div class="ni" data-file="SEQUENCE_DIAGRAMS.md" onclick="load(this)"><span class="ni-icon">🔀</span> Sequence Diagrams</div>
+    <div class="nt">Architecture Diagrams</div>
+    <div class="ni" data-file="SEQUENCE_DIAGRAMS.md"           onclick="load(this)"><span class="ni-icon">🔀</span> EKS Flow Diagrams</div>
+    <div class="ni" data-file="SECURITY_DIAGRAMS.md"          onclick="load(this)"><span class="ni-icon">🛡️</span> Security &amp; Auth Diagrams</div>
+    <div class="ni" data-file="DATABASE_DIAGRAMS.md"          onclick="load(this)"><span class="ni-icon">🗃️</span> Database Pattern Diagrams</div>
+    <div class="ni" data-file="SYSTEM_ARCHITECTURE_DIAGRAMS.md" onclick="load(this)"><span class="ni-icon">🏗️</span> System Architecture Diagrams</div>
   </div>
 </aside>
 
@@ -353,7 +356,10 @@ const CARDS=[
   {f:'CIRCLECI_CICD_GUIDE.md',                     i:'⚙️',t:'CircleCI CI/CD',              d:'Tag-based deployments, orbs, approvals, rollback.'},
   {f:'MONITORING_LOGGING.md',                      i:'📊',t:'Monitoring & Logging',        d:'CloudWatch, Fluent Bit, Prometheus, Grafana, X-Ray.'},
   {f:'SECURITY_BEST_PRACTICES.md',                 i:'🔒',t:'Security Best Practices',     d:'Secrets, IRSA, RBAC, network policies, GuardDuty.'},
-  {f:'SEQUENCE_DIAGRAMS.md',                       i:'🔀',t:'Sequence Diagrams',            d:'8 Mermaid diagrams: CI/CD, ECR push, EKS deploy, DNS, scaling.'},
+  {f:'SEQUENCE_DIAGRAMS.md',                       i:'🔀',t:'EKS Flow Diagrams',            d:'8 diagrams: CI/CD, ECR push, EKS deploy, DNS, HPA, secrets.'},
+  {f:'SECURITY_DIAGRAMS.md',                       i:'🛡️',t:'Security & Auth Diagrams',     d:'10 diagrams: WAF, JWT, OAuth2 PKCE, rate limiting, mTLS, RBAC, SPIFFE.'},
+  {f:'DATABASE_DIAGRAMS.md',                       i:'🗃️',t:'Database Pattern Diagrams',    d:'15 diagrams: PgBouncer, Aurora, CQRS, Saga, Outbox, cache, event sourcing.'},
+  {f:'SYSTEM_ARCHITECTURE_DIAGRAMS.md',            i:'🏗️',t:'System Architecture Diagrams', d:'15 diagrams: Kafka, circuit breaker, canary, gRPC, Istio, multi-region, strangler fig.'},
 ];
 function showHome(){
   document.querySelectorAll('.ni').forEach(i=>i.classList.remove('active'));
@@ -367,7 +373,7 @@ function showHome(){
       <p>Everything you need to deploy Node.js + Python microservices on AWS EKS — from zero to production.</p>
       <p class="wm">
         <a href="https://github.com/BaluRaut/eks-nodejs-python-database" target="_blank">View on GitHub</a>
-        &nbsp;·&nbsp; 12 guides &nbsp;·&nbsp; Node.js · Python · PostgreSQL · EKS
+        &nbsp;·&nbsp; 15 guides &amp; 48 diagrams &nbsp;·&nbsp; Node.js · PostgreSQL · EKS
       </p>
     </div>
     <div class="grid">${CARDS.map(c=>`
