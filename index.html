@@ -312,7 +312,8 @@ async function load(el){
     });
     if(mermaidBlocks.length){
       initMermaid();
-      await mermaid.run({nodes:mermaidBlocks});
+      try{ await mermaid.run({nodes:mermaidBlocks}); }
+      catch(me){ console.warn('Mermaid render error',me); }
     }
     /* syntax highlighting — run AFTER innerHTML is set */
     c.querySelectorAll('pre code').forEach(block=>{
