@@ -211,7 +211,8 @@
     <div class="nt">Infrastructure</div>
     <div class="ni" data-file="ROUTE53_CUSTOM_DOMAIN_ACM.md"                  onclick="load(this)"><span class="ni-icon">🌐</span> Route 53, Domains &amp; ACM</div>
     <div class="ni" data-file="DATABASE_CONSOLIDATION_RDS_VS_CONTAINER.md"    onclick="load(this)"><span class="ni-icon">🗄️</span> Database: RDS vs Container</div>
-    <div class="ni" data-file="DATABASE_COMPLETE_GUIDE.md"                    onclick="load(this)"><span class="ni-icon">📋</span> Database Complete Guide</div>
+    <div class="ni" data-file="POSTGRESQL_COMPLETE_GUIDE.md"                  onclick="load(this)"><span class="ni-icon">🐘</span> PostgreSQL Complete Guide</div>
+    <div class="ni" data-file="DATABASE_COMPLETE_GUIDE.md"                    onclick="load(this)"><span class="ni-icon">📋</span> All Databases Reference</div>
     <div class="ni" data-file="DATABASE_MIGRATION_DIAGRAMS.md"                onclick="load(this)"><span class="ni-icon">🔁</span> DB Migration &amp; DR Diagrams</div>
     <div class="ni" data-file="COST_EXPLORER.md"                               onclick="load(this)"><span class="ni-icon">💰</span> Cost Management</div>
   </div>
@@ -362,7 +363,8 @@ const CARDS=[
   {f:'SECURITY_DIAGRAMS.md',                       i:'🛡️',t:'Security & Auth Diagrams',     d:'10 diagrams: WAF, JWT, OAuth2 PKCE, rate limiting, mTLS, RBAC, SPIFFE.'},
   {f:'DATABASE_DIAGRAMS.md',                       i:'🗃️',t:'Database Pattern Diagrams',    d:'15 diagrams: PgBouncer, Aurora, CQRS, Saga, Outbox, cache, event sourcing.'},
   {f:'SYSTEM_ARCHITECTURE_DIAGRAMS.md',            i:'🏗️',t:'System Architecture Diagrams', d:'15 diagrams: Kafka, circuit breaker, canary, gRPC, Istio, multi-region, strangler fig.'},
-  {f:'DATABASE_COMPLETE_GUIDE.md',                i:'📋',t:'Database Complete Guide',       d:'MySQL, PostgreSQL, Aurora, Oracle, K8s StatefulSets, partitioning, backup, PITR, DMS.'},
+  {f:'POSTGRESQL_COMPLETE_GUIDE.md',              i:'🐘',t:'PostgreSQL Complete Guide',     d:'22 sections: roles, RLS, indexes, partitioning, JSONB, FTS, replication, K8s, AWS RDS.'},
+  {f:'DATABASE_COMPLETE_GUIDE.md',                i:'📋',t:'All Databases Reference',        d:'MySQL, Aurora, Oracle, K8s StatefulSets, partitioning, backup, PITR, DMS decision tree.'},
   {f:'DATABASE_MIGRATION_DIAGRAMS.md',            i:'🔁',t:'DB Migration & DR Diagrams',    d:'14 diagrams: Oracle→PG, MySQL→Aurora, PITR, Global DB failover, Velero, DMS CDC.'},
 ];
 function showHome(){
@@ -377,7 +379,7 @@ function showHome(){
       <p>Everything you need to deploy Node.js + Python microservices on AWS EKS — from zero to production.</p>
       <p class="wm">
         <a href="https://github.com/BaluRaut/eks-nodejs-python-database" target="_blank">View on GitHub</a>
-        &nbsp;·&nbsp; 17 guides &amp; 62 diagrams &nbsp;·&nbsp; Node.js · PostgreSQL · Aurora · EKS
+        &nbsp;·&nbsp; 18 guides &amp; 62 diagrams &nbsp;·&nbsp; Node.js · PostgreSQL · Aurora · EKS
       </p>
     </div>
     <div class="grid">${CARDS.map(c=>`
