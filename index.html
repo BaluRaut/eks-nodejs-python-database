@@ -163,11 +163,27 @@
     .ci{font-size:22px;margin-bottom:8px}
     .ct{font-weight:600;font-size:13.5px;color:var(--hx);margin-bottom:5px}
     .cd{font-size:12px;color:var(--tm);line-height:1.45}
+    /* On-this-page TOC */
+    #toc{
+      position:sticky;top:0;max-height:calc(100vh - 56px);overflow-y:auto;
+      width:200px;flex-shrink:0;padding:16px 0 24px;
+      border-left:1px solid var(--br);background:var(--sb);
+      font-size:12px;line-height:1.5;display:none;
+    }
+    #toc.visible{display:block}
+    #toc .toc-title{padding:4px 14px 8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tm)}
+    #toc a{display:block;padding:3px 14px;color:var(--tm);text-decoration:none;border-left:2px solid transparent;transition:color .1s,border-color .1s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #toc a:hover{color:var(--ac)}
+    #toc a.toc-active{color:var(--ac);border-left-color:var(--ac)}
+    #toc a.toc-h3{padding-left:22px;font-size:11px}
+    /* make main area 3-column when TOC visible */
+    body.toc-open main{padding-right:16px}
     /* Responsive */
     @media(max-width:800px){
       body{grid-template-columns:1fr;grid-template-rows:56px 1fr}
       aside{display:none}
       main{padding:20px 16px 40px}
+      #toc{display:none!important}
     }
   </style>
 </head>
@@ -228,6 +244,7 @@
     <div class="ni" data-file="SECURITY_DIAGRAMS.md"          onclick="load(this)"><span class="ni-icon">🛡️</span> Security &amp; Auth Diagrams</div>
     <div class="ni" data-file="DATABASE_DIAGRAMS.md"          onclick="load(this)"><span class="ni-icon">🗃️</span> Database Pattern Diagrams</div>
     <div class="ni" data-file="SYSTEM_ARCHITECTURE_DIAGRAMS.md" onclick="load(this)"><span class="ni-icon">🏗️</span> System Architecture Diagrams</div>
+    <div class="ni" data-file="CONCEPTS_ANALOGIES.md"          onclick="load(this)"><span class="ni-icon">💡</span> Concepts &amp; Analogies</div>
   </div>
 </aside>
 
@@ -239,7 +256,10 @@
     Substitute your own values before running commands.</div>
   </div>
   <div id="loading"><div class="spin"></div><span style="font-size:13px">Loading…</span></div>
-  <div id="content"></div>
+  <div id="content-wrap" style="display:flex;gap:0;align-items:flex-start">
+    <div id="content" style="flex:1;min-width:0"></div>
+    <nav id="toc"><div class="toc-title">On this page</div></nav>
+  </div>
 </main>
 
 <script>
@@ -337,6 +357,76 @@ async function load(el){
       p.appendChild(b);
     });
     if(hit)wb.classList.add('on');
+
+    /* ── Fix internal anchor links (TOC) ── */
+    c.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click',e=>{
+        e.preventDefault();
+        const id=decodeURIComponent(a.getAttribute('href').slice(1));
+        /* marked generates ids: lowercase, spaces→dashes, strip punctuation */
+        const target=c.querySelector('#'+CSS.escape(id))
+          || [...c.querySelectorAll('h1,h2,h3,h4,h5,h6')]
+              .find(h=>h.id===id || h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')===id);
+        if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+
+    /* ── Open external links in new tab ── */
+    c.querySelectorAll('a[href^="http"]').forEach(a=>{
+      a.target='_blank'; a.rel='noopener noreferrer';
+    });
+
+    /* ── Cross-guide links: data-guide="FILENAME.md" ── */
+    c.querySelectorAll('a[href$=".md"]').forEach(a=>{
+      const mdFile=a.getAttribute('href').replace(/^.*\//,'');
+      const navEl=document.querySelector(`[data-file="${mdFile}"]`);
+      if(navEl){ a.href='#'; a.addEventListener('click',e=>{e.preventDefault();navEl.click();}); }
+    });
+
+    /* ── Build On-This-Page TOC ── */
+    const toc=document.getElementById('toc');
+    toc.innerHTML='<div class="toc-title">On this page</div>';
+    const headings=[...c.querySelectorAll('h2,h3')];
+    if(headings.length>2){
+      toc.classList.add('visible');
+      headings.forEach(h=>{
+        const a=document.createElement('a');
+        a.className=h.tagName==='H3'?'toc-h3':'';
+        a.textContent=h.textContent.replace(/^#+\s*/,'');
+        a.href='#'+h.id;
+        a.addEventListener('click',e=>{
+          e.preventDefault();
+          h.scrollIntoView({behavior:'smooth',block:'start'});
+        });
+        toc.appendChild(a);
+      });
+      /* Highlight active heading on scroll */
+      const obs=new IntersectionObserver(entries=>{
+        entries.forEach(en=>{
+          if(en.isIntersecting){
+            toc.querySelectorAll('a').forEach(a=>a.classList.remove('toc-active'));
+            const link=toc.querySelector(`a[href="#${en.target.id}"]`);
+            if(link) link.classList.add('toc-active');
+          }
+        });
+      },{rootMargin:'-10% 0px -80% 0px'});
+      headings.forEach(h=>obs.observe(h));
+    } else {
+      toc.classList.remove('visible');
+    }
+
+    /* ── Back-to-top button ── */
+    let btt=document.getElementById('btt');
+    if(!btt){
+      btt=document.createElement('button');
+      btt.id='btt';btt.textContent='↑ Top';
+      btt.style.cssText='position:fixed;bottom:28px;right:28px;background:var(--ac);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;opacity:0;transition:opacity .25s;z-index:200;';
+      document.body.appendChild(btt);
+      btt.onclick=()=>document.getElementById('main').scrollTo({top:0,behavior:'smooth'});
+    }
+    const main=document.getElementById('main');
+    main.onscroll=()=>{ btt.style.opacity=main.scrollTop>300?'1':'0'; };
+
   }catch(e){
     c.innerHTML=`<div style="text-align:center;padding:80px 0;color:var(--tm)">
       <p style="font-size:1.4em;margin-bottom:8px">Guide not found</p>
@@ -366,11 +456,13 @@ const CARDS=[
   {f:'POSTGRESQL_COMPLETE_GUIDE.md',              i:'🐘',t:'PostgreSQL Complete Guide',     d:'22 sections: roles, RLS, indexes, partitioning, JSONB, FTS, replication, K8s, AWS RDS.'},
   {f:'DATABASE_COMPLETE_GUIDE.md',                i:'📋',t:'All Databases Reference',        d:'MySQL, Aurora, Oracle, K8s StatefulSets, partitioning, backup, PITR, DMS decision tree.'},
   {f:'DATABASE_MIGRATION_DIAGRAMS.md',            i:'🔁',t:'DB Migration & DR Diagrams',    d:'14 diagrams: Oracle→PG, MySQL→Aurora, PITR, Global DB failover, Velero, DMS CDC.'},
+  {f:'CONCEPTS_ANALOGIES.md',                    i:'💡',t:'Concepts & Analogies',            d:'41 real-world analogies for PostgreSQL, Kubernetes, AWS, and architecture patterns.'},
 ];
 function showHome(){
   document.querySelectorAll('.ni').forEach(i=>i.classList.remove('active'));
   document.getElementById('wb').classList.remove('on');
   document.getElementById('loading').style.display='none';
+  document.getElementById('toc').classList.remove('visible');
   location.hash='';
   document.getElementById('content').innerHTML=`
     <div class="welcome">
@@ -379,7 +471,7 @@ function showHome(){
       <p>Everything you need to deploy Node.js + Python microservices on AWS EKS — from zero to production.</p>
       <p class="wm">
         <a href="https://github.com/BaluRaut/eks-nodejs-python-database" target="_blank">View on GitHub</a>
-        &nbsp;·&nbsp; 18 guides &amp; 62 diagrams &nbsp;·&nbsp; Node.js · PostgreSQL · Aurora · EKS
+        &nbsp;·&nbsp; 19 guides &amp; 62 diagrams &nbsp;·&nbsp; Node.js · PostgreSQL · Aurora · EKS
       </p>
     </div>
     <div class="grid">${CARDS.map(c=>`
